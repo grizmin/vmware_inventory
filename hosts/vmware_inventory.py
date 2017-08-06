@@ -487,7 +487,6 @@ class VMWareInventory(object):
                 if not isinstance(v['config']['annotation'], string_types):
                     continue
                 annotations = v['config']['annotation'].strip().split('\n')
-                print(annotations)
                 for note in annotations:
                     match = tag.match(note)
                     if match:
