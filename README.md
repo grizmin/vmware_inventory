@@ -4,6 +4,7 @@ Ansible VMware dynamic inventory with 'annotation' variable support.
 Since version 6 additional information field is not supported. There is no way to get tags information.
 This vesion of vmware_inventory uses annotation (notes) field  to populate tags, variables and list_variables.
 
+## Features
 * gruping by tag support
 * multiple values separated by , are translated to list
 
@@ -14,6 +15,7 @@ VCenter VM Notes:
 ```
 ansiblemanaged
 group_by_something
+ldap=Flase
 debian
 debian9
 properties_list1=true,true,false,1,2
@@ -97,6 +99,7 @@ ansible inventory:
       "kafkanode1.grizmin.org"
     ]
   },
+---CUT---
 ```
 
 
