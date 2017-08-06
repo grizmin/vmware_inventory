@@ -404,6 +404,7 @@ class VMWareInventory(object):
         inventory = VMWareInventory._empty_inventory()
         inventory['all'] = {}
         inventory['all']['hosts'] = []
+        # print(inventory)
         for idx, instance in enumerate(instances):
             # make a unique id for this object to avoid vmware's
             # numerous uuid's which aren't all unique.
@@ -441,6 +442,10 @@ class VMWareInventory(object):
             except Exception:
                 continue
 
+            # add tags, properties, list_properties
+            inventory['_meta']['hostvars'][k]['tags'] = []
+            inventory['_meta']['hostvars'][k]['properties'] = {}
+
             if k == v:
                 continue
 
@@ -451,6 +456,7 @@ class VMWareInventory(object):
             # cleanup old key
             inventory['all']['hosts'].remove(k)
             inventory['_meta']['hostvars'].pop(k, None)
+
 
         self.debugl('pre-filtered hosts:')
         for i in inventory['all']['hosts']:
@@ -472,20 +478,29 @@ class VMWareInventory(object):
             self.debugl('  * %s' % i)
 
         for k, v in inventory['_meta']['hostvars'].items():
+
+            property = re.compile('(^\w+)=(\w+)(?!,)$')
+            tag = re.compile('^(^\w+)$')
+            property_list = re.compile('^(^\w+)=((\w+(,?))+$)')
+
             if 'config' in v:
                 if not isinstance(v['config']['annotation'], string_types):
                     continue
-                values = []
-                for i in  v['config']['annotation'].strip().split('\n'):
-                    if i:
-                        print(i.split('='))
-                        values.append(i)
-                        v['tag'].append(i.strip())
+                annotations = v['config']['annotation'].strip().split('\n')
+                print(annotations)
+                for note in annotations:
+                    match = tag.match(note)
+                    if match:
+                        v['tags'].append(match.group(1))
 
-        # Create tag groups
+                    match = property_list.match(note)
+                    if match:
+                        v['properties'][match.group(1)] = match.group(2).split(',')
+
+        # Create tags groups
         for k, v in inventory['_meta']['hostvars'].items():
-            for i in  v['tag']:
-                print(i)
+            for i in v['tags']:
+                # print(i)
                 if i not in inventory:
                     inventory[i] = {}
                     inventory[i]['hosts'] = []
