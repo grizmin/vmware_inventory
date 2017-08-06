@@ -494,8 +494,16 @@ class VMWareInventory(object):
 
                     match = property_list.match(note)
                     if match:
-                        v['properties'][match.group(1)] = match.group(2).split(',')
-
+                        arr = []
+                        for i in match.group(2).split(','):
+                            if i.isdigit(): i = int(i)
+                            elif i.lower() == 'false': i = False
+                            elif i.lower() == 'true': i = True
+                            arr.append(i)
+                        if len(arr) < 2:
+                            v['properties'][match.group(1)] = arr[0]
+                        else:
+                            v['properties'][match.group(1)] = arr
         # Create tags groups
         for k, v in inventory['_meta']['hostvars'].items():
             for i in v['tags']:
