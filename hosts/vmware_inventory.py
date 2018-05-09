@@ -479,9 +479,12 @@ class VMWareInventory(object):
 
         for k, v in inventory['_meta']['hostvars'].items():
 
-            property = re.compile('(^\w+)=(\w+)(?!,)$')
-            tag = re.compile('^(^\w+)$')
-            property_list = re.compile('^(^\w+)=((\w+(,?))+$)')
+            property = re.compile('(^\w+)=([\w\d\.\'\"\_\-]+)(?!,)$')
+            tag = re.compile('^(^[\w\d\_\-\@\*]+)$')
+            #property_list = re.compile('^(^\w+)=((\w+(,?))+$)')
+            #property_list = re.compile('^(^\w+)=\[([\w\d\.\_\-\*]+\,.*)\]$') #version for standalone lists
+            property_list = re.compile('^(^\w+)=([\[\w\d\.\_\-\*\]\']+\,?.*)$')
+
 
             if 'config' in v:
                 if not isinstance(v['config']['annotation'], string_types):
